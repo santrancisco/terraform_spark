@@ -24,8 +24,34 @@ variable "slave_asg_min_size" {
   description = "The minimum size of the auto scale group"
 }
 
-variable "slave_asg_desired_capacity" {
-  description = "The number of Amazon EC2 instances that should be running in the group"
+# variable "slave_asg_desired_capacity" {
+#   default = 0
+#   description = "The number of Amazon EC2 instances that should be running in the group"
+# }
+
+variable "evaluation_periods" {
+  default = "2"
+  description = "The number of periods over which data is compared to the specified threshold."
+}
+
+variable "period" {
+  default = "120"
+  description = "The period in seconds over which the specified statistic is applied."
+}
+
+variable "threshold" {
+  default = "85"
+  description = "The value against which the Average CPUUtilization statistic is compared to."
+}
+
+variable "cooldown" {
+  default = "300"
+  description = "The amount of time, in seconds, after a scaling activity completes and before the next scaling activity can start."
+}
+
+variable "scaling_adjustment" {
+  default = "2"
+  description = "The number of instances by which to scale. adjustment_type determines the interpretation of this number."
 }
 
 variable master_instance_type {
