@@ -53,31 +53,60 @@ resource "aws_autoscaling_group" "this" {
   }
 }
 
-resource "aws_autoscaling_policy" "this" {
+resource "aws_autoscaling_policy" "up" {
   name                   = "${aws_autoscaling_group.this.name}_ChangeInCapacity"
-  scaling_adjustment     = "${var.scaling_adjustment}"
+  scaling_adjustment     = "${var.scaling_up_adjustment}"
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = "${var.cooldown}"
+  autoscaling_group_name = "${aws_autoscaling_group.this.name}"
+}
+
+resource "aws_autoscaling_policy" "down" {
+  name                   = "${aws_autoscaling_group.this.name}_ChangeInCapacity"
+  scaling_adjustment     = "${var.scaling_down_adjustment}"
   adjustment_type        = "ChangeInCapacity"
   cooldown               = "${var.cooldown}"
   autoscaling_group_name = "${aws_autoscaling_group.this.name}"
 }
 
 
-resource "aws_cloudwatch_metric_alarm" "this" {
-  alarm_name          = "${aws_autoscaling_group.this.name}_CPUUtilization"
+
+resource "aws_cloudwatch_metric_alarm" "down" {
+  alarm_name          = "${aws_autoscaling_group.this.name}_down_CPUUtilization"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods  = "${var.evaluation_periods}"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "${var.period}"
+  statistic           = "Average"
+  threshold           = "${var.downthreshold}"
+
+  dimensions {
+    AutoScalingGroupName = "${aws_autoscaling_group.this.name}"
+  }
+
+  alarm_description = "This metric monitors ec2 cpu utilization to trigger scaling down the number of instances"
+  alarm_actions     = ["${aws_autoscaling_policy.down.arn}"]
+}
+
+
+
+resource "aws_cloudwatch_metric_alarm" "up" {
+  alarm_name          = "${aws_autoscaling_group.this.name}_up_CPUUtilization"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "${var.evaluation_periods}"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = "${var.period}"
   statistic           = "Average"
-  threshold           = "${var.threshold}"
+  threshold           = "${var.upthreshold}"
 
   dimensions {
     AutoScalingGroupName = "${aws_autoscaling_group.this.name}"
   }
 
-  alarm_description = "This metric monitors ec2 cpu utilization"
-  alarm_actions     = ["${aws_autoscaling_policy.this.arn}"]
+  alarm_description = "This metric monitors ec2 cpu utilization to trigger scaling up the number of instances"
+  alarm_actions     = ["${aws_autoscaling_policy.up.arn}"]
 }
 
 

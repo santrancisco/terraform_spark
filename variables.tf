@@ -39,8 +39,13 @@ variable "period" {
   description = "The period in seconds over which the specified statistic is applied."
 }
 
-variable "threshold" {
+variable "upthreshold" {
   default = "85"
+  description = "The value against which the Average CPUUtilization statistic is compared to."
+}
+
+variable "downthreshold" {
+  default = "30"
   description = "The value against which the Average CPUUtilization statistic is compared to."
 }
 
@@ -49,10 +54,16 @@ variable "cooldown" {
   description = "The amount of time, in seconds, after a scaling activity completes and before the next scaling activity can start."
 }
 
-variable "scaling_adjustment" {
+variable "scaling_up_adjustment" {
   default = "2"
-  description = "The number of instances by which to scale. adjustment_type determines the interpretation of this number."
+  description = "The number of instances by which to scale up. "
 }
+
+variable "scaling_down_adjustment" {
+  default = "-5"
+  description = "The number of instances by which to scale down. Should be a negative number"
+}
+
 
 variable master_instance_type {
   description = "Instance type for our master node"
