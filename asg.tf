@@ -53,16 +53,9 @@ resource "aws_autoscaling_group" "this" {
   }
 }
 
-resource "aws_autoscaling_policy" "up" {
-  name                   = "${aws_autoscaling_group.this.name}_ChangeInCapacity"
-  scaling_adjustment     = "${var.scaling_up_adjustment}"
-  adjustment_type        = "ChangeInCapacity"
-  cooldown               = "${var.cooldown}"
-  autoscaling_group_name = "${aws_autoscaling_group.this.name}"
-}
 
 resource "aws_autoscaling_policy" "down" {
-  name                   = "${aws_autoscaling_group.this.name}_ChangeInCapacity"
+  name                   = "${aws_autoscaling_group.this.name}_down_ChangeInCapacity"
   scaling_adjustment     = "${var.scaling_down_adjustment}"
   adjustment_type        = "ChangeInCapacity"
   cooldown               = "${var.cooldown}"
@@ -89,7 +82,13 @@ resource "aws_cloudwatch_metric_alarm" "down" {
   alarm_actions     = ["${aws_autoscaling_policy.down.arn}"]
 }
 
-
+resource "aws_autoscaling_policy" "up" {
+  name                   = "${aws_autoscaling_group.this.name}_up_ChangeInCapacity"
+  scaling_adjustment     = "${var.scaling_up_adjustment}"
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = "${var.cooldown}"
+  autoscaling_group_name = "${aws_autoscaling_group.this.name}"
+}
 
 resource "aws_cloudwatch_metric_alarm" "up" {
   alarm_name          = "${aws_autoscaling_group.this.name}_up_CPUUtilization"

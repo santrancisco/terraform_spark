@@ -60,7 +60,7 @@ variable "scaling_up_adjustment" {
 }
 
 variable "scaling_down_adjustment" {
-  default = "-5"
+  default = "-2"
   description = "The number of instances by which to scale down. Should be a negative number"
 }
 
